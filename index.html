@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="app.webmanifest"><link rel="icon" href="icon128.png"><meta name="theme-color" content="#141833">
+<title>Mini Arcade</title>
+<style>
+:root{--bg:#141833;--bg2:#0d1024;--fg:#f4f1ff;--card:#232a55;--ac:#ffd166;--on:#141833;--mu:#a9afd8}
+@media(prefers-color-scheme:light){:root{--bg:#eef1ff;--bg2:#dfe5ff;--fg:#141833;--card:#fff;--ac:#5b3df5;--on:#fff;--mu:#566}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html{background:var(--bg2)}
+body{margin:0;min-height:100vh;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));background:radial-gradient(1200px 500px at 50% -10%,var(--card),var(--bg) 60%);color:var(--fg);font:16px ui-rounded,"Trebuchet MS",system-ui,sans-serif;text-align:center}
+button{font:inherit;color:var(--fg);cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+header{max-width:900px;margin:0 auto}
+h1{margin:6px 0 0;font-size:36px}
+#cnt{margin:2px 0 14px;color:var(--mu)}
+#q,.in{padding:12px 16px;border-radius:999px;border:2px solid var(--ac);background:var(--card);color:var(--fg);font:inherit;width:min(100%,420px);text-align:center}
+.in{border-radius:12px;font-size:20px;width:min(92vw,320px)}
+#cats{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}
+.chip,.b{background:var(--card);border:2px solid var(--ac);border-radius:999px;padding:6px 16px}
+.b{border-radius:10px}
+.chip:hover,.b:hover,.chip.on{background:var(--ac);color:var(--on)}
+.b:disabled{opacity:.35;pointer-events:none}
+#list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;max-width:1000px;margin:12px auto}
+.card{display:flex;align-items:center;gap:12px;text-align:left;background:var(--card);border:2px solid transparent;border-radius:16px;padding:10px;transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-2px);border-color:var(--ac)}
+.pv{flex:none;width:60px;height:60px;border-radius:14px;display:grid;place-items:center;font-size:32px;box-shadow:inset 0 0 0 2px #fff3}
+.card b{display:block}.card small{color:var(--mu)}
+.bar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:20px}
+#st{min-height:1.5em;margin:10px 0}
+#stage{display:flex;flex-direction:column;align-items:center;gap:10px}
+.hint{opacity:.6;font-size:14px}
+canvas{background:#10132b;border-radius:12px;max-width:100%;touch-action:none;box-shadow:0 8px 30px #0006}
+.g{display:grid;gap:6px;margin:auto}
+.c{background:var(--card);border:0;border-radius:8px;aspect-ratio:1;font-size:min(8vw,36px);display:flex;align-items:center;justify-content:center;user-select:none;padding:0}
+.c:disabled{opacity:.5}
+.c.o{background:transparent;box-shadow:inset 0 0 0 1px var(--card)}
+.c.l{background:#ecd9b0;border-radius:0}.c.d{background:#a97c50;border-radius:0}
+.c.s{box-shadow:inset 0 0 0 4px #22c55e}
+.c.h{background-image:radial-gradient(circle,rgba(0,90,40,.7) 18%,transparent 20%)}
+.tap,.box{width:min(92vw,480px);background:var(--card);border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:26px;user-select:none;color:var(--fg)}
+.tap{height:260px;cursor:pointer;color:#fff;background:#2563eb}
+.box{min-height:130px;padding:18px;white-space:pre-line}
+.kb{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:440px}.kb .b{padding:6px 10px;min-width:38px;text-transform:uppercase}
+.hn{display:flex;gap:10px;justify-content:center;width:min(92vw,480px)}
+.pg{width:32%;height:260px;background:var(--card);border-radius:10px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;padding:6px;cursor:pointer}
+.pg.on{outline:3px solid var(--ac)}.pg i{display:block;height:20px;border-radius:6px}
+.cd{display:inline-block;background:#fff;color:#111;border-radius:6px;padding:4px 7px;margin:2px;font-weight:bold}.cd.r{color:#d33}.cd.x{background:#4a5590;color:#4a5590}
+.b.on{background:var(--ac);color:var(--on)}
+.card{padding:0;display:block;position:relative}.play{display:flex;align-items:center;gap:12px;text-align:left;background:none;border:0;padding:10px;width:100%;border-radius:16px}.star{position:absolute;top:2px;right:6px;background:none;border:0;font-size:22px;color:var(--ac);padding:4px}
+</style></head><body>
+<div id="menu">
+<header><h1>🎮 Mini Arcade</h1><p id="cnt"></p><p id="insp" hidden><button class="b" id="ins">Install app</button></p>
+<input id="q" type="search" placeholder="Search games…" aria-label="Search games"><div id="cats"></div></header>
+<div id="list"></div></div>
+<div id="game" hidden>
+<div class="bar"><button class="b" id="bk">← Menu</button><b id="title"></b><button class="b" id="rs">↻ Restart</button><button class="b" id="fv" aria-label="Favorite">☆</button></div>
+<p id="st"></p><div id="stage"></div>
+<p class="hint">R restarts · Esc returns to the menu</p>
+</div>
+<script src="app.js"></script></body></html>
